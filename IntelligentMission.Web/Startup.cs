@@ -115,12 +115,12 @@ namespace IntelligentMission.Web
 
             app.UseCookieAuthentication();
 
-            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
-            {
-                ClientId = Configuration["Authentication:AzureAd:ClientId"],
-                Authority = Configuration["Authentication:AzureAd:AADInstance"] + Configuration["Authentication:AzureAd:TenantId"],
-                CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"]
-            });
+            //app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+            //{
+            //    ClientId = Configuration["Authentication:AzureAd:ClientId"],
+            //    Authority = Configuration["Authentication:AzureAd:AADInstance"] + Configuration["Authentication:AzureAd:TenantId"],
+            //    CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"]
+            //});
 
             //app.UseMiddleware(typeof(ExceptionHandlingMiddleware));
 
