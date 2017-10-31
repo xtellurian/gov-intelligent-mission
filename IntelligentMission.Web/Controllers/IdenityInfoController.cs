@@ -14,7 +14,7 @@ namespace IntelligentMission.Web.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            if (false)
+            if (true)
             {
                 var identityInfo =  new
                 {
