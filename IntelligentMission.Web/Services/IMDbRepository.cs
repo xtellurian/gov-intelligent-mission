@@ -23,7 +23,7 @@ namespace IntelligentMission.Web.Services
         public async Task InitializeDatabase()
         {
             await this.CreateDatabaseIfNotExistsAsync();
-            await this.CreateCollectionIfNotExistsAsync(DocDbNames.CatalogFiles);
+            await this.CreateCollectionIfNotExistsAsync(DocDbNames.CatalogFiles, "/fileType");
             await this.CreateCollectionIfNotExistsAsync(DocDbNames.People);
         }
 
@@ -151,9 +151,17 @@ namespace IntelligentMission.Web.Services
 
         public async Task<CatalogFile> GetCatalogFile(string docId, FileType fileType)
         {
-            var doc = await this.docClient.ReadDocumentAsync<CatalogFile>(GetDocUri(docId), 
+            try
+            {
+                var doc = await this.docClient.ReadDocumentAsync<CatalogFile>(GetDocUri(docId), 
                 new RequestOptions { PartitionKey = new PartitionKey((int)fileType) });
-            return doc;
+                return doc;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return null;
         }
 
         public async Task DeleteCatalogFile(string docId, FileType fileType)
@@ -185,7 +193,7 @@ namespace IntelligentMission.Web.Services
             }
         }
 
-        private async Task CreateCollectionIfNotExistsAsync(string collectionName)
+        private async Task CreateCollectionIfNotExistsAsync(string collectionName, string partitionKey = null)
         {
             try
             {
@@ -195,14 +203,17 @@ namespace IntelligentMission.Web.Services
             {
                 if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
+                    var collection = new DocumentCollection();
+                    collection.Id = collectionName;
+                    if(! string.IsNullOrEmpty(partitionKey)) collection.PartitionKey.Paths.Add(partitionKey);
                     await this.docClient.CreateDocumentCollectionAsync(
                         UriFactory.CreateDatabaseUri(DocDbNames.DbName),
-                        new DocumentCollection { Id = collectionName },
+                        collection,
                         new RequestOptions { OfferThroughput = 1000 });
                 }
                 else
                 {
-                    throw;
+                    throw; 
                 }
             }
         }
